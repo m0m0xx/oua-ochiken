@@ -61,8 +61,8 @@
         <div class="flex flex-wrap gap-3">
           <input id="titleInput" class="min-w-72 flex-1 rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-lg font-bold outline-none focus:border-emerald-400" placeholder="ライブ/当日必要なもの" />
           <button id="cancelBtn" class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-bold">キャンセル</button>
-          <button id="wipBtn" class="rounded-md border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-bold text-amber-700">WIP</button>
-          <button id="shipBtn" class="rounded-md bg-emerald-600 px-4 py-2 text-sm font-bold text-white">Ship</button>
+          <button id="wipBtn" class="rounded-md border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-bold text-amber-700">下書き保存</button>
+          <button id="shipBtn" class="rounded-md bg-emerald-600 px-4 py-2 text-sm font-bold text-white">公開保存</button>
         </div>
       </div>
 
@@ -193,10 +193,10 @@ const initialPosts = [
 - コードリール（学園祭の時のみ）
 
 ### ［準備・設定］
-1. 芸漫までにカメラ充電 ＆ 不要なデータ消去（カメラを開いて横🎥/▶️ボタン押す → 画面のゴミ箱ボタン）しておくべし。
+1. 芸漫までにカメラ充電（コードは写真①）＆ 不要なデータ消去（写真②：開いて横🎥/▶️ボタン押す → 画面のゴミ箱ボタン）しておくべし。
 2. 学祭芸漫以外は充電コードは繋がずにやってます。
 3. カメラを置く場所は**床のカーペットが5枚映るくらい**の場所。
-4. ※電源が勝手に切れたら一旦閉じてまた開くと付く。
+4. ※電源が勝手に切れたら一旦閉じてまた開くと付くよ。
 5. ※三脚壊れてて全部足伸ばすと水平じゃなくなるからちょっと調整する。
 
 ### ［本番の操作］
@@ -323,7 +323,7 @@ function renderTreeNode(node, depth = 0) {
       <button data-id="${post.id}" class="postLink flex w-full items-center rounded-md px-2 py-2 text-left ${post.id === selectedId ? "bg-emerald-50 text-emerald-800" : "text-gray-600 hover:bg-gray-50"}" style="padding-left:${depth * 16 + 28}px">
         <span class="mr-2 text-gray-400">#</span>
         <span class="min-w-0 flex-1 truncate">${escapeHtml(post.leaf)}</span>
-        ${post.status === "wip" ? `<span class="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-700">WIP</span>` : ""}
+        ${post.status === "wip" ? `<span class="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-700">下書き</span>` : ""}
       </button>
     `).join("")}
   `;
@@ -357,7 +357,7 @@ function renderViewer() {
   selectedId = post.id;
   $("viewTitle").textContent = post.title;
   $("viewBody").innerHTML = marked.parse(post.body || "_本文がありません。_");
-  $("statusBadge").textContent = post.status === "wip" ? "WIP" : "Ship";
+  $("statusBadge").textContent = post.status === "wip" ? "下書き" : "公開";
   $("statusBadge").className = `rounded-full px-2.5 py-1 text-xs font-bold ${post.status === "wip" ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"}`;
   $("updatedAt").textContent = `更新: ${formatDate(post.updatedAt)}`;
 }
