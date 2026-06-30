@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>部内ルール共有</title>
+  <title>大阪芸術大学落語研究寄席の会 - 部内ルール共有</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
@@ -20,18 +20,20 @@
 </head>
 <body class="bg-gray-50 text-gray-900 overflow-x-hidden">
 
+<!-- スマホ用ヘッダー -->
 <header class="lg:hidden flex items-center justify-between bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-40 shadow-sm">
   <div class="flex items-center gap-3">
     <button id="menuMenuBtn" class="p-2 text-gray-600 hover:bg-gray-100 rounded-md">
       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
     </button>
-    <span class="font-extrabold text-gray-800">部内ルール共有</span>
+    <span class="font-extrabold text-gray-800 text-sm">芸大落研ルール共有</span>
   </div>
   <button id="unlockBtnMobile" class="text-xs font-bold px-2.5 py-1.5 rounded-md border border-emerald-200 bg-emerald-50 text-emerald-700">ロック解除</button>
 </header>
 
 <div class="flex min-h-screen relative">
   
+  <!-- サイドバー -->
   <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 shrink-0 border-r border-gray-200 bg-white transform -translate-x-full transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 flex flex-col h-screen">
     <div class="border-b border-gray-200 p-5 sticky top-0 bg-white z-10">
       <div class="flex items-center justify-between">
@@ -41,25 +43,116 @@
         </button>
       </div>
       <div class="mt-1 flex items-center justify-between gap-3">
-        <h1 class="text-xl font-extrabold hidden lg:block">部内ルール共有</h1>
+        <h1 class="text-xl font-extrabold hidden lg:block">芸大落研ルール共有</h1>
         <button id="unlockBtn" class="hidden lg:block rounded-md border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700">編集ロック</button>
       </div>
       <button id="newBtn" class="mt-4 w-full rounded-md bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white disabled:bg-gray-300">+ 新規作成</button>
       <p id="lockText" class="mt-3 rounded-md bg-gray-50 px-3 py-2 text-xs text-gray-600 hidden lg:block"></p>
     </div>
 
+    <!-- 検索バー -->
     <div class="border-b border-gray-200 p-4 bg-white">
       <input id="search" class="w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none focus:border-emerald-400" placeholder="記事を検索" />
     </div>
 
-    <nav id="tree" class="p-3 text-sm overflow-y-auto flex-1"></nav>
+    <!-- カテゴリツリー -->
+    <nav id="tree" class="p-3 text-sm overflow-y-auto flex-1">
+      <button id="homeBtn" class="flex w-full items-center rounded-md px-2 py-2 text-left mb-2 text-emerald-800 bg-emerald-50 font-bold">
+        <span class="mr-2">🏠</span>
+        <span class="min-w-0 flex-1 truncate">ホーム / SNS・予定</span>
+      </button>
+      <div id="treeContent"></div>
+    </nav>
   </aside>
 
+  <!-- スマホ用背景マスク -->
   <div id="sidebarOverlay" class="fixed inset-0 bg-black/40 z-40 hidden transition-opacity duration-300"></div>
 
+  <!-- メインコンテンツ領域 -->
   <main class="min-w-0 flex-1 w-full">
     
-    <section id="viewer" class="mx-auto max-w-4xl p-4 sm:p-6 lg:p-8">
+    <!-- 🏠 ホーム画面 -->
+    <section id="homeView" class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
+      <div class="mb-6 border-b border-gray-200 pb-5">
+        <h2 class="text-xl sm:text-3xl font-extrabold text-gray-900 break-words">大阪芸術大学落語研究寄席の会</h2>
+        <p class="text-sm text-gray-500 mt-1">部内連絡・マニュアル・公式SNSまとめ</p>
+      </div>
+
+      <!-- 今後の予定 -->
+      <div class="mb-8 rounded-xl bg-white p-5 sm:p-6 shadow-sm ring-1 ring-gray-200">
+        <div class="flex items-center justify-between flex-wrap gap-2 mb-4">
+          <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">📅 今後の予定</h3>
+          <span class="text-xs font-bold text-amber-600 bg-amber-50 border border-amber-200 rounded px-2 py-1">⚠️会場の借用の都合で変更になる場合あり</span>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="border border-gray-100 rounded-lg p-4 bg-gray-50/50">
+            <h4 class="font-extrabold text-emerald-700 border-b border-emerald-200 pb-1 mb-2">🗓️ 7月</h4>
+            <p class="text-sm"><span class="font-bold text-amber-700">ネタ見せ：</span>15日, 16日, 17日</p>
+            <p class="text-sm mt-1"><span class="font-bold text-emerald-600">芸漫：</span>22日, 23日, 24日</p>
+          </div>
+
+          <div class="border border-gray-100 rounded-lg p-4 bg-gray-50/50">
+            <h4 class="font-extrabold text-emerald-700 border-b border-emerald-200 pb-1 mb-2">🗓️ 10月</h4>
+            <p class="text-sm"><span class="font-bold text-amber-700">ネタ見せ：</span>9/30, 10/1, 10/2</p>
+            <p class="text-sm mt-1"><span class="font-bold text-emerald-600">芸漫：</span>7日, 8日, 9日</p>
+          </div>
+
+          <div class="border border-gray-100 rounded-lg p-4 bg-emerald-50/30 border-emerald-100">
+            <h4 class="font-extrabold text-purple-700 border-b border-purple-200 pb-1 mb-2">🎪 学園祭</h4>
+            <p class="text-sm"><span class="font-bold text-amber-700">ネタ見せ：</span>10月21, 22, 23日</p>
+            <p class="text-sm mt-1"><span class="font-bold text-purple-600">学祭芸漫：</span>10月31日, 11月1日</p>
+            <p class="text-xs text-purple-700 font-bold mt-1">🎉 11月1日：学祭打ち上げ予定</p>
+          </div>
+
+          <div class="border border-gray-100 rounded-lg p-4 bg-gray-50/50">
+            <h4 class="font-extrabold text-emerald-700 border-b border-emerald-200 pb-1 mb-2">🗓️ 12月</h4>
+            <p class="text-sm"><span class="font-bold text-amber-700">ネタ見せ：</span>9日, 10日, 11日</p>
+            <p class="text-sm mt-1"><span class="font-bold text-emerald-600">芸漫：</span>16日, 17日, 18日</p>
+          </div>
+
+          <div class="border border-gray-100 rounded-lg p-4 bg-gray-50/50">
+            <h4 class="font-extrabold text-emerald-700 border-b border-emerald-200 pb-1 mb-2">🗓️ 1月</h4>
+            <p class="text-sm"><span class="font-bold text-amber-700">ネタ見せ：</span>12日, 13日, 14日</p>
+            <p class="text-sm mt-1"><span class="font-bold text-emerald-600">芸漫：</span>20日, 21日, 22日</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SNSセクション -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-1 flex flex-col gap-4">
+          <h3 class="text-lg font-bold text-gray-900">🔗 公式SNSまとめ</h3>
+          
+          <a href="https://youtube.com/channel/UCYryhZIw1hewNTg1E-4a6PA?si=2Zx6Dp_IQsdTeNj8" target="_blank" class="flex items-center gap-3 p-4 rounded-xl bg-red-50 text-red-700 border border-red-100 hover:bg-red-100/50 transition shadow-sm">
+            <svg class="w-8 h-8 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            <div>
+              <p class="font-bold text-sm">公式YouTube</p>
+              <p class="text-xs text-red-600">過去のネタ動画・ライブ映像</p>
+            </div>
+          </a>
+
+          <a href="https://www.instagram.com/oua_ochiken?igsh=bnBkbndjMG1iMmZw" target="_blank" class="flex items-center gap-3 p-4 rounded-xl bg-pink-50 text-pink-700 border border-pink-100 hover:bg-pink-100/50 transition shadow-sm">
+            <svg class="w-8 h-8 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+            <div>
+              <p class="font-bold text-sm">公式Instagram</p>
+              <p class="text-xs text-pink-600">日常・部員の写真</p>
+            </div>
+          </a>
+        </div>
+
+        <div class="lg:col-span-2 flex flex-col gap-2">
+          <h3 class="text-lg font-bold text-gray-900">🐦 公式X (旧Twitter) 最新ポスト</h3>
+          <div class="rounded-xl bg-white shadow-sm ring-1 ring-gray-200 overflow-hidden h-[450px]">
+            <a class="twitter-timeline" data-height="450" data-theme="light" href="https://twitter.com/oua_ochiken?ref_src=twsrc%5Etfw">Tweets by oua_ochiken</a>
+            <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 記事閲覧画面 -->
+    <section id="viewer" class="mx-auto max-w-4xl p-4 sm:p-6 lg:p-8 hidden">
       <div class="mb-6 flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-gray-200 pb-5">
         <div>
           <div class="mb-2 flex items-center gap-2 flex-wrap">
@@ -76,6 +169,7 @@
       <article id="viewBody" class="preview rounded-md bg-white p-4 sm:p-7 shadow-sm ring-1 ring-gray-200 overflow-x-auto"></article>
     </section>
 
+    <!-- 編集画面 -->
     <section id="editor" class="hidden h-screen flex-col bg-white">
       <div class="border-b border-gray-200 bg-white p-4">
         <label class="mb-1 block text-xs font-bold uppercase tracking-widest text-gray-500">title</label>
@@ -95,7 +189,7 @@
           <textarea id="bodyInput" class="min-h-0 flex-1 resize-none p-4 font-mono text-sm leading-6 outline-none bg-gray-50/30" placeholder="Markdown形式で記述してください..."></textarea>
         </div>
         <div class="min-h-0 overflow-y-auto bg-gray-50 hidden lg:block" id="previewContainer">
-          <div class="sticky top-0 border-b border-gray-200 bg-gray-50 px-5 py-2 text-xs font-bold text-gray-500">リアルタイムプレビュー（PCのみ）</div>
+          <div class="sticky top-0 border-b border-gray-200 bg-gray-50 px-5 py-2 text-xs font-bold text-gray-500">リアルタイムプレビュー</div>
           <article id="editPreview" class="preview m-5 rounded-md bg-white p-7 shadow-sm ring-1 ring-gray-200"></article>
         </div>
       </div>
@@ -103,6 +197,7 @@
   </main>
 </div>
 
+<!-- パスコード入力モーダル -->
 <div id="modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 p-4">
   <div class="w-full max-w-sm rounded-lg bg-white p-5 shadow-xl transition-all scale-95 duration-200">
     <p class="text-xs font-bold uppercase tracking-widest text-emerald-600">edit access</p>
@@ -119,92 +214,23 @@
 
 <script>
 const STORAGE_KEY = "esa_like_posts_v1";
-const DATA_VERSION_KEY = "esa_like_posts_data_version";
-const CURRENT_DATA_VERSION = 2;
 const EDIT_SESSION_KEY = "esa_like_edit_unlocked";
-
-// 部室の鍵のダイヤル番号に変更！変更したい場合はここを書き換えてね
 const EDIT_PASSCODE = "9265"; 
 
-// marked.js の設定：チェックボックスを綺麗にレンダリングできるように設定
-marked.use({
-  gfm: true,
-  breaks: true
-});
+marked.use({ gfm: true, breaks: true });
 
-const neededItemsBody = `# 芸漫当日に必要なものリスト
-
-### ■ 全体共通
-- [ ] 板 6枚
-- [ ] スピーカー 2つ（※充電要チェック）
-- [ ] カメラ（※充電要チェック）
-- [ ] カメラの三脚
-- [ ] その日の分のアンケート
-- [ ] クリップボード
-- [ ] 筆記用具箱（鉛筆などが入っている箱）
-
-### ■ 落語のもの
-- [ ] 高座台（ビールケースを9つつなげたもの）
-- [ ] 毛氈（赤い布）
-- [ ] 座布団（紫のもの）
-- [ ] 名ビラの木枠
-- [ ] 芸大落研のビラ
-- [ ] その日の出演者の名ビラ
-- [ ] 見台（必要な出演者がいる日のみ）
-
-### ■ イロモノのもの
-- [ ] マイク
-
-### ■ 大喜利があるとき
-- [ ] ホワイトボード
-- [ ] ホワイトボードマーカー
-- [ ] イレイサー（消すやつ）`;
+const neededItemsBody = `# 芸漫当日に必要なものリスト\n\n### ■ 全体共通\n- [ ] 板 6枚\n- [ ] スピーカー 2つ\n- [ ] カメラ\n- [ ] カメラの三脚\n- [ ] その日の分のアンケート\n- [ ] クリップボード\n- [ ] 筆記用具箱\n\n### ■ 落語のもの\n- [ ] 高座台（ビールケース9つ）\n- [ ] 毛氈（赤い布）\n- [ ] 座布団（紫）\n- [ ] 名ビラの木枠\n- [ ] 芸大落研のビラ\n- [ ] その日の出演者の名ビラ\n- [ ] 見台（必要な場合のみ）\n\n### ■ イロモノのもの\n- [ ] マイク\n\n### ■ 大喜利があるとき\n- [ ] ホワイトボード\n- [ ] ホワイトボードマーカー\n- [ ] イレイサー`;
 
 const initialPosts = [
   {
     title: "共有/部室の鍵の借り方・返し方",
     status: "ship",
-    body: `# 【鍵の借り方・返し方】
-
-### 〇鍵を借りる時
-1. **11号館1階の守衛室**に行き、守衛さんに「34番と66番と104番の鍵を貸してください」と伝える。
-   - ※104番（部室）の鍵で、34番と66番は（練習室）の鍵です。基本的にいつも3つとも借ります。
-2. 大きなバインダーに挟まった紙をめくると、2枚目に「学籍番号・名前・鍵を借りた時間」を書く欄があるため、鍵を借りた人が書く。
-   - 本人確認のために**学生証を見せる**。
-3. 鍵を受け取る。
-4. グループLINEにて「鍵借りました」と報告する。
-
-### 〇鍵を返す時
-1. **11号館1階の守衛室**に行き、守衛さんに鍵を返す.
-2. 大きなバインダー2枚目の紙に「学籍番号・名前・鍵を返した時間」を書く欄があるため、鍵を返した人が書く。
-   - 返す時は学生証見せなくてOK。
-3. グループLINEにて「鍵返しました」と報告する。
-
-> 💡 **返却の注意点**
-> - 鍵の返却は基本的に放課後に人がいなかったらする。
-> - 全員帰ることになり鍵を守衛室まで返しに行く際は、**部室の窓が閉まっているか、電源タップや部屋の電気が消えているか**を確認して鍵を閉めて返しに行く。
-> - **22時までに**鍵を返さなければいけない。
-
-### 〇部室を離れる時
-- 昼休み終わり授業の合間など部室に誰もいなくなる時は、鍵入れに鍵を入れておく。
-- ダイヤルは「**9265**」のままで回す必要はない。`
+    body: `# 【鍵の借り方・返し方】\n\n### 〇鍵を借りる時\n1. **11号館1階の守衛室**に行き、守衛さんに「34番と66番と104番の鍵を貸してください」と伝える。\n   - ※104番（部室）、34番と66番は（練習室）の鍵。基本的にいつも3つとも借ります。\n2. 大きなバインダーの2枚目に「学籍番号・名前・鍵を借りた時間」を書き、**学生証を見せる**。\n3. 鍵を受け取る。\n4. グループLINEにて「鍵借りました」と報告する。\n\n### 〇鍵を返す時\n1. **11号館1階の守衛室**に行き、鍵を返す。\n2. バインダーに「学籍番号・名前・鍵を返した時間」を書く（学生証は不要）。\n3. グループLINEにて「鍵返しました」と報告する。\n\n> 💡 **返却の注意点**\n> - 全員帰る際は、**部室の窓が閉まっているか、電源や電気が消えているか**を確認する。\n> - **22時までに**鍵を返さなければいけない。\n\n### 〇部室を離れる時\n- 部室に誰もいなくなる時は、鍵入れに鍵を入れておく。\n- ダイヤルは「**9265**」のままで回す必要はない。`
   },
   {
     title: "芸漫/ルール",
     status: "ship",
-    body: `# 芸漫の基本ルール
-
-### ■ チェリー方式について
-コンビの片方が2組目に別の人とエントリーする場合、その相方は2組目には出演できない方式。
-
-- **例：** AとBのコンビのうち、AがCと2組目として出演する場合、Bは2組目で出演できない。Cの相方も2組目で出演できない。
-
-### ■ 出囃子（でばやし）について
-- グループLINEのノートに**出演日前日 23:59までに**、\`曲名／アーティスト名 ＋ YouTubeのリンク\` を記載して送る。
-
-### ■ 当日の流れ・裏方連絡
-- **コントの人：** 出演当日、明転のタイミングとオチ台詞を裏方に伝える。
-- **当日の動き：** 会場入りしてすぐバミリを行う。バミリを行い次第、落語の高座をセッティングする。`
+    body: `# 芸漫の基本ルール\n\n### ■ チェリー方式について\nコンビの片方が2組目に別の人とエントリーする場合、その相方は2組目には出演できない方式。\n\n### ■ 出囃子（でばやし）について\n- グループLINEのノートに**出演日前日 23:59までに**、\\\`曲名／アーティスト名 ＋ YouTubeのリンク\\\` を送る。\n\n### ■ 当日の流れ・裏方連絡\n- **コントの人：** 明転のタイミングとオチ台詞を裏方に伝える。\n- **当日の動き：** 会場入りしてすぐバミリを行い、落語の高座をセッティングする。`
   },
   {
     title: "芸漫/当日必要なもの",
@@ -214,29 +240,12 @@ const initialPosts = [
   {
     title: "芸漫/カメラ使い方講座",
     status: "ship",
-    body: `# 芸漫の時のカメラ使い方講座
-
-### ［必要なモノ］
-- カメラ、充電コード（箱ごと）
-- 三脚
-- コードリール（学園祭の時のみ）
-
-### ［準備・設定］
-1. 芸漫までにカメラ充電（コードは写真①）＆ 不要なデータ消去（写真②：開いて横🎥/▶️ボタン押す → 画面のゴミ箱ボタン）しておくべし。
-2. 学祭芸漫以外は充電コードは繋がずにやってます。
-3. カメラを置く場所は**床のカーペットが5枚映るくらい**の場所。
-4. ※電源が勝手に切れたら一旦閉じてまた開くと付くよ。
-5. ※三脚壊れてて全部足伸ばすと水平じゃなくなるからちょっと調整する。
-
-### ［本番の操作］
-- カメラ右側の赤点ボタンを押すと録画開始。
-- **前説、後説、企画は撮らない。**
-- ネタは**1組ごとに録画を止める**。`
+    body: `# 芸漫の時のカメラ使い方講座\n\n### ［必要なモノ］\n- カメラ、充電コード、三脚\n\n### ［準備・設定］\n1. 芸漫までにカメラ充電＆不要なデータ消去しておくべし。\n2. カメラを置く場所は**床のカーペットが5枚映るくらい**の場所。\n3. 三脚が少し壊れているので、足の長さを微調整して水平にする。\n\n### ［本番の操作］\n- 右側の赤点ボタンで録画開始。\n- **前説、後説、企画は撮らない。**\n- ネタは**1組ごとに録画を止める**。`
   }
 ];
 
 let posts = loadPosts();
-let selectedId = posts[0]?.id ?? null;
+let selectedId = null;
 let editingId = null;
 let query = "";
 let unlocked = sessionStorage.getItem(EDIT_SESSION_KEY) === "true";
@@ -247,11 +256,7 @@ function now() { return new Date().toISOString(); }
 
 function loadPosts() {
   const raw = localStorage.getItem(STORAGE_KEY);
-  if (raw) {
-    try {
-      return JSON.parse(raw);
-    } catch {}
-  }
+  if (raw) { try { return JSON.parse(raw); } catch {} }
   localStorage.setItem(STORAGE_KEY, JSON.stringify(initialPosts.map((p, i) => ({ id: `sample-${i + 1}`, ...p, createdAt: now(), updatedAt: now() }))));
   return JSON.parse(localStorage.getItem(STORAGE_KEY));
 }
@@ -304,28 +309,31 @@ function renderTreeNode(node, depth = 0) {
 }
 
 function renderTree() {
-  $("tree").innerHTML = renderTreeNode(buildTree(filteredPosts())) || `<p class="p-3 text-gray-500">記事が見つかりません。</p>`;
+  $("treeContent").innerHTML = renderTreeNode(buildTree(filteredPosts())) || `<p class="p-3 text-gray-500">記事が見つかりません。</p>`;
+  if (selectedId === null) {
+    $("homeBtn").classList.add("bg-emerald-50", "text-emerald-800", "font-bold");
+    $("homeBtn").classList.remove("text-gray-600");
+  } else {
+    $("homeBtn").classList.remove("bg-emerald-50", "text-emerald-800", "font-bold");
+    $("homeBtn").classList.add("text-gray-600");
+  }
   document.querySelectorAll(".postLink").forEach(btn => {
     btn.onclick = () => {
       selectedId = btn.dataset.id;
       editingId = null;
       showViewer();
       render();
-      closeSidebar(); // スマホ時はタップしたら自動でメニューを閉じる
+      closeSidebar();
     };
   });
 }
 
-function selectedPost() { return posts.find(p => p.id === selectedId) || posts[0]; }
+$("homeBtn").onclick = () => { selectedId = null; editingId = null; showHome(); renderTree(); closeSidebar(); };
 
 function renderViewer() {
-  const post = selectedPost();
-  if (!post) {
-    $("viewTitle").textContent = "記事がありません";
-    $("viewBody").innerHTML = "<p class='text-gray-500'>左上のメニューから記事を選択するか、新しく作成してください。</p>";
-    return;
-  }
-  selectedId = post.id;
+  if (selectedId === null) return;
+  const post = posts.find(p => p.id === selectedId);
+  if (!post) { selectedId = null; showHome(); return; }
   $("viewTitle").textContent = post.title;
   $("viewBody").innerHTML = marked.parse(post.body || "_本文がありません。_");
   $("statusBadge").textContent = post.status === "wip" ? "下書き" : "公開";
@@ -336,128 +344,51 @@ function renderViewer() {
 function renderLock() {
   const btns = ["newBtn", "editBtn", "deleteBtn"];
   btns.forEach(id => { if($(id)) $(id).disabled = !unlocked; });
-  
-  const text = unlocked ? "編集OK" : "編集ロック";
-  if($("unlockBtn")) $("unlockBtn").textContent = text;
+  if($("unlockBtn")) $("unlockBtn").textContent = unlocked ? "編集OK" : "編集ロック";
   if($("unlockBtnMobile")) $("unlockBtnMobile").textContent = unlocked ? "編集モード" : "ロック解除";
   if($("lockText")) $("lockText").textContent = unlocked ? "編集モードです。作成・編集ができます。" : "閲覧モードです。編集にはパスコードが必要です。";
 }
 
-function render() {
-  renderLock();
-  renderTree();
-  renderViewer();
-}
-
-// スマホ用サイドバー操作
-function openSidebar() {
-  $("sidebar").classList.remove("-translate-x-full");
-  $("sidebarOverlay").classList.remove("hidden");
-}
-function closeSidebar() {
-  $("sidebar").classList.add("-translate-x-full");
-  $("sidebarOverlay").classList.add("hidden");
-}
-
+function render() { renderLock(); renderTree(); if (selectedId !== null) renderViewer(); }
+function openSidebar() { $("sidebar").classList.remove("-translate-x-full"); $("sidebarOverlay").classList.remove("hidden"); }
+function closeSidebar() { $("sidebar").classList.add("-translate-x-full"); $("sidebarOverlay").classList.add("hidden"); }
 $("menuMenuBtn").onclick = openSidebar;
 $("closeSidebarBtn").onclick = closeSidebar;
 $("sidebarOverlay").onclick = closeSidebar;
 
-function showViewer() {
-  $("viewer").classList.remove("hidden");
-  $("editor").classList.add("hidden");
-  $("editor").classList.remove("flex");
-  window.scrollTo(0, 0);
-}
-
-function showEditor() {
-  $("viewer").classList.add("hidden");
-  $("editor").classList.remove("hidden");
-  $("editor").classList.add("flex");
-  updatePreview();
-  window.scrollTo(0, 0);
-}
-
-function openModal() {
-  $("modal").classList.remove("hidden");
-  $("modal").classList.add("flex");
-  $("passError").classList.add("hidden");
-  $("passInput").value = "";
-  setTimeout(() => $("passInput").focus(), 0);
-}
-function closeModal() {
-  $("modal").classList.add("hidden");
-  $("modal").classList.remove("flex");
-}
+function showHome() { $("homeView").classList.remove("hidden"); $("viewer").classList.add("hidden"); $("editor").classList.add("hidden"); window.scrollTo(0, 0); }
+function showViewer() { $("homeView").classList.add("hidden"); $("viewer").classList.remove("hidden"); $("editor").classList.add("hidden"); window.scrollTo(0, 0); }
+function showEditor() { $("homeView").classList.add("hidden"); $("viewer").classList.add("hidden"); $("editor").classList.remove("hidden"); $("editor").classList.add("flex"); updatePreview(); window.scrollTo(0, 0); }
+function openModal() { $("modal").classList.remove("hidden"); $("modal").classList.add("flex"); $("passError").classList.add("hidden"); $("passInput").value = ""; setTimeout(() => $("passInput").focus(), 0); }
+function closeModal() { $("modal").classList.add("hidden"); $("modal").classList.remove("flex"); }
 function requireUnlock() { if (unlocked) return true; openModal(); return false; }
+function updatePreview() { const title = $("titleInput").value.trim(); const body = $("bodyInput").value; $("editPreview").innerHTML = marked.parse((title ? `# ${title}\n\n` : "") + body); }
 
-function updatePreview() {
-  const title = $("titleInput").value.trim();
-  const body = $("bodyInput").value;
-  $("editPreview").innerHTML = marked.parse((title ? `# ${title}\n\n` : "") + body);
-}
-
-const unlockHandler = () => {
-  if (unlocked) {
-    unlocked = false;
-    sessionStorage.removeItem(EDIT_SESSION_KEY);
-    showViewer();
-    renderLock();
-  } else {
-    openModal();
-  }
-};
+const unlockHandler = () => { if (unlocked) { unlocked = false; sessionStorage.removeItem(EDIT_SESSION_KEY); showHome(); selectedId = null; render(); } else { openModal(); } };
 $("unlockBtn").onclick = unlockHandler;
 $("unlockBtnMobile").onclick = unlockHandler;
 
-$("passSubmit").onclick = () => {
-  if ($("passInput").value === EDIT_PASSCODE) {
-    unlocked = true;
-    sessionStorage.setItem(EDIT_SESSION_KEY, "true");
-    closeModal();
-    renderLock();
-  } else {
-    $("passError").classList.remove("hidden");
-  }
-};
+$("passSubmit").onclick = () => { if ($("passInput").value === EDIT_PASSCODE) { unlocked = true; sessionStorage.setItem(EDIT_SESSION_KEY, "true"); closeModal(); renderLock(); } else { $("passError").classList.remove("hidden"); } };
 $("passInput").onkeydown = e => { if (e.key === "Enter") $("passSubmit").click(); if (e.key === "Escape") closeModal(); };
 $("modalClose").onclick = closeModal;
 
 $("newBtn").onclick = () => { if (!requireUnlock()) return; editingId = null; $("titleInput").value = ""; $("bodyInput").value = "# 新しい記事\n\nここに内容を書きます。"; closeSidebar(); showEditor(); };
-$("editBtn").onclick = () => { if (!requireUnlock()) return; const post = selectedPost(); if (!post) return; editingId = post.id; $("titleInput").value = post.title; $("bodyInput").value = post.body; showEditor(); };
-
-$("deleteBtn").onclick = () => {
-  if (!requireUnlock()) return;
-  const post = selectedPost();
-  if (!post || !confirm(`「${post.title}」を削除しますか？`)) return;
-  posts = posts.filter(p => p.id !== post.id);
-  selectedId = posts[0]?.id ?? null;
-  savePosts();
-  showViewer();
-  render();
-};
-
-$("cancelBtn").onclick = showViewer;
+$("editBtn").onclick = () => { if (!requireUnlock()) return; const post = posts.find(p => p.id === selectedId); if (!post) return; editingId = post.id; $("titleInput").value = post.title; $("bodyInput").value = post.body; showEditor(); };
+$("deleteBtn").onclick = () => { if (!requireUnlock()) return; const post = posts.find(p => p.id === selectedId); if (!post || !confirm(`「${post.title}」を削除しますか？`)) return; posts = posts.filter(p => p.id !== post.id); selectedId = null; savePosts(); showHome(); render(); };
+$("cancelBtn").onclick = () => { if(editingId) { showViewer(); } else { showHome(); } };
 
 function saveCurrent(status) {
   if (!requireUnlock()) return;
   const title = $("titleInput").value.trim();
   const body = $("bodyInput").value.trim();
   if (!title) { alert("タイトルを入力してください。"); return; }
-
   if (editingId) {
     const post = posts.find(p => p.id === editingId);
-    post.title = title; post.body = body; post.status = status; post.updatedAt = now();
-    selectedId = post.id;
+    post.title = title; post.body = body; post.status = status; post.updatedAt = now(); selectedId = post.id;
   } else {
-    const post = { id: `post-${Date.now()}`, title, body, status, createdAt: now(), updatedAt: now() };
-    posts.push(post);
-    selectedId = post.id;
+    const post = { id: `post-${Date.now()}`, title, body, status, createdAt: now(), updatedAt: now() }; posts.push(post); selectedId = post.id;
   }
-  savePosts();
-  editingId = null;
-  showViewer();
-  render();
+  savePosts(); editingId = null; showViewer(); render();
 }
 
 $("wipBtn").onclick = () => saveCurrent("wip");
@@ -466,6 +397,7 @@ $("titleInput").oninput = updatePreview;
 $("bodyInput").oninput = updatePreview;
 $("search").oninput = e => { query = e.target.value; renderTree(); };
 
+showHome();
 render();
 </script>
 </body>
