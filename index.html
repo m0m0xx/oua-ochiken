@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>部内ルール共有</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .preview h1 { font-size: 1.8rem; font-weight: 800; border-bottom: 1px solid #e5e7eb; padding-bottom: .7rem; margin-bottom: 1rem; }
+    .preview h3 { font-size: 1.1rem; font-weight: 800; margin-top: 1.4rem; margin-bottom: .5rem; }
+    .preview p, .preview li { line-height: 1.8; }
+    .preview ul { list-style: disc; margin-left: 1.4rem; }
+    .preview ol { list-style: decimal; margin-left: 1.4rem; }
+    .preview blockquote { background: #ecfdf5; border-left: 4px solid #34d399; padding: .8rem 1rem; border-radius: 0 .5rem .5rem 0; color: #065f46; }
+    .preview code { background: #f3f4f6; padding: .1rem .35rem; border-radius: .3rem; color: #047857; }
+    .preview input[type="checkbox"] { margin-right: .45rem; accent-color: #10b981; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+<div class="flex min-h-screen">
+  <aside class="w-80 shrink-0 border-r border-gray-200 bg-white">
+    <div class="border-b border-gray-200 p-5">
+      <p class="text-xs font-bold uppercase tracking-widest text-emerald-600">knowledge</p>
+      <div class="mt-1 flex items-center justify-between gap-3">
+        <h1 class="text-xl font-extrabold">部内ルール共有</h1>
+        <button id="unlockBtn" class="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-bold text-emerald-700">編集ロック</button>
+      </div>
+      <button id="newBtn" class="mt-4 w-full rounded-md bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white disabled:bg-gray-300">+ 新規作成</button>
+      <p id="lockText" class="mt-3 rounded-md bg-gray-50 px-3 py-2 text-xs text-gray-600"></p>
+    </div>
+
+    <div class="border-b border-gray-200 p-4">
+      <input id="search" class="w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none focus:border-emerald-400" placeholder="記事を検索" />
+    </div>
+
+    <nav id="tree" class="p-3 text-sm"></nav>
+  </aside>
+
+  <main class="min-w-0 flex-1">
+    <section id="viewer" class="mx-auto max-w-5xl p-8">
+      <div class="mb-6 flex items-start justify-between gap-4 border-b border-gray-200 pb-5">
+        <div>
+          <div class="mb-2 flex items-center gap-2">
+            <span id="statusBadge" class="rounded-full px-2.5 py-1 text-xs font-bold"></span>
+            <span id="updatedAt" class="text-sm text-gray-500"></span>
+          </div>
+          <h2 id="viewTitle" class="break-words text-3xl font-extrabold"></h2>
+        </div>
+        <div class="flex gap-2">
+          <button id="editBtn" class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-bold disabled:text-gray-400">編集</button>
+          <button id="deleteBtn" class="rounded-md border border-red-200 bg-white px-4 py-2 text-sm font-bold text-red-600 disabled:text-gray-400">削除</button>
+        </div>
+      </div>
+      <article id="viewBody" class="preview rounded-md bg-white p-7 shadow-sm ring-1 ring-gray-200"></article>
+    </section>
+
+    <section id="editor" class="hidden h-screen flex-col">
+      <div class="border-b border-gray-200 bg-white p-5">
+        <label class="mb-1 block text-xs font-bold uppercase tracking-widest text-gray-500">title</label>
+        <div class="flex flex-wrap gap-3">
+          <input id="titleInput" class="min-w-72 flex-1 rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-lg font-bold outline-none focus:border-emerald-400" placeholder="ライブ/当日必要なもの" />
+          <button id="cancelBtn" class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-bold">キャンセル</button>
+          <button id="wipBtn" class="rounded-md border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-bold text-amber-700">WIP</button>
+          <button id="shipBtn" class="rounded-md bg-emerald-600 px-4 py-2 text-sm font-bold text-white">Ship</button>
+        </div>
+      </div>
+
+      <div class="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-2">
+        <div class="flex min-h-0 flex-col border-r border-gray-200 bg-white">
+          <div class="border-b border-gray-200 px-5 py-3 text-sm font-bold">Markdown</div>
+          <textarea id="bodyInput" class="min-h-0 flex-1 resize-none p-5 font-mono text-sm leading-7 outline-none"></textarea>
+        </div>
+        <div class="min-h-0 overflow-y-auto bg-gray-50">
+          <div class="sticky top-0 border-b border-gray-200 bg-gray-50 px-5 py-3 text-sm font-bold">Preview</div>
+          <article id="editPreview" class="preview m-5 rounded-md bg-white p-7 shadow-sm ring-1 ring-gray-200"></article>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/35 p-4">
+  <div class="w-full max-w-sm rounded-lg bg-white p-5 shadow-xl">
+    <p class="text-xs font-bold uppercase tracking-widest text-emerald-600">edit access</p>
+    <h2 class="mt-1 text-xl font-extrabold">パスコード入力</h2>
+    <p class="mt-2 text-sm text-gray-600">編集・新規作成・削除・保存にはパスコードが必要です。</p>
+    <input id="passInput" type="password" class="mt-4 w-full rounded-md border border-gray-200 px-3 py-2.5 outline-none focus:border-emerald-400" placeholder="パスコード" />
+    <p id="passError" class="mt-2 hidden text-sm font-bold text-red-600">パスコードが違います。</p>
+    <div class="mt-5 flex justify-end gap-2">
+      <button id="modalClose" class="rounded-md border border-gray-300 px-4 py-2 text-sm font-bold">閉じる</button>
+      <button id="passSubmit" class="rounded-md bg-emerald-600 px-4 py-2 text-sm font-bold text-white">解除</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = "esa_like_posts_v1";
+const EDIT_SESSION_KEY = "esa_like_edit_unlocked";
+const EDIT_PASSCODE = "esa2026";
+
+marked.setOptions({ gfm: true, breaks: true });
+
+const initialPosts = [
+  {
+    title: "共有/部室の鍵の借り方・返し方",
+    status: "ship",
+    body: `# 【鍵の借り方・返し方】
+
+### 〇鍵を借りる時
+1. **11号館1階の守衛室**に行き、守衛さんに「34番と66番と104番の鍵を貸してください」と伝える。
+   - ※104番（部室）の鍵で、34番と66番は（練習室）の鍵です。基本的にいつも3つとも借ります。
+2. 大きなバインダーに挟まった紙をめくると、2枚目に「学籍番号・名前・鍵を借りた時間」を書く欄があるため、鍵を借りた人が書く。
+   - 本人確認のために**学生証を見せる**。
+3. 鍵を受け取る。
+4. グループLINEにて「鍵借りました」と報告する。
+
+### 〇鍵を返す時
+1. **11号館1階の守衛室**に行き、守衛さんに鍵を返す。
+2. 大きなバインダー2枚目の紙に「学籍番号・名前・鍵を返した時間」を書く欄があるため、鍵を返した人が書く。
+   - 返す時は学生証見せなくてOK。
+3. グループLINEにて「鍵返しました」と報告する。
+
+> 💡 **返却の注意点**
+> - 鍵の返却は基本的に放課後に人がいなかったらする。
+> - 全員帰ることになり鍵を守衛室まで返しに行く際は、**部室の窓が閉まっているか、電源タップや部屋の電気が消えているか**を確認して鍵を閉めて返しに行く。
+> - **22時までに**鍵を返さなければいけない。
+
+### 〇部室を離れる時
+- 昼休み終わり授業の合間など部室に誰もいなくなる時は、鍵入れに鍵を入れておく。
+- ダイヤルは「**9265**」のままで回す必要はない。`
+  },
+  {
+    title: "芸漫/ルール",
+    status: "ship",
+    body: `# 芸漫の基本ルール
+
+### ■ チェリー方式について
+コンビの片方が2組目に別の人とエントリーする場合、その相方は2組目には出演できない方式。
+
+- **例：** AとBのコンビのうち、AがCと2組目として出演する場合、Bは2組目で出演できない。Cの相方も2組目で出演できない。
+
+### ■ 出囃子（でばやし）について
+- グループLINEのノートに**出演日前日 23:59までに**、\`曲名／アーティスト名 ＋ YouTubeのリンク\` を記載して送る。
+
+### ■ 当日の流れ・裏方連絡
+- **コントの人：** 出演当日、明転のタイミングとオチ台詞を裏方に伝える。
+- **当日の動き：** 会場入りしてすぐバミリを行う。バミリを行い次第、落語の高座をセッティングする。`
+  },
+  {
+    title: "芸漫/当日必要なもの",
+    status: "ship",
+    body: `# 芸漫当日に必要なものリスト
+
+### ■ 全体共通
+- [ ] 板 6枚
+- [ ] スピーカー 2つ（※充電要チェック）
+- [ ] カメラ（※充電要チェック）
+- [ ] カメラの三脚
+- [ ] その日の分のアンケート
+- [ ] クリップボード
+- [ ] 筆記用具箱（鉛筆などが入っている箱）
+
+### ■ 落語のもの
+- [ ] 高座台（ビールケースを9つつなげたもの）
+- [ ] 毛氈（赤い布）
+- [ ] 座布団（紫のもの）
+- [ ] 名ビラの木枠
+- [ ] 芸大落研のビラ
+- [ ] その日の出演者の名ビラ
+- [ ] 見台（必要な出演者がいる日のみ）
+
+### ■ イロモノのもの
+- [ ] マイク
+- [ ] ホワイトボード
+- [ ] ホワイトボードマーカーなどが入っている箱`
+  },
+  {
+    title: "芸漫/カメラ使い方講座",
+    status: "ship",
+    body: `# 芸漫の時のカメラ使い方講座
+
+### ［必要なモノ］
+- カメラ、充電コード（箱ごと）
+- 三脚
+- コードリール（学園祭の時のみ）
+
+### ［準備・設定］
+1. 芸漫までにカメラ充電（コードは写真①）＆ 不要なデータ消去（写真②：開いて横🎥/▶️ボタン押す → 画面のゴミ箱ボタン）しておくべし。
+2. 学祭芸漫以外は充電コードは繋がずにやってます。
+3. カメラを置く場所は**床のカーペットが5枚映るくらい**の場所。
+4. ※電源が勝手に切れたら一旦閉じてまた開くと付くよ。
+5. ※三脚壊れてて全部足伸ばすと水平じゃなくなるからちょっと調整する。
+
+### ［本番の操作］
+- カメラ右側の赤点ボタンを押すと録画開始。
+- **前説、後説、企画は撮らない。**
+- ネタは**1組ごとに録画を止める**。`
+  }
+];
+
+let posts = loadPosts();
+let selectedId = posts[0]?.id ?? null;
+let editingId = null;
+let query = "";
+let unlocked = sessionStorage.getItem(EDIT_SESSION_KEY) === "true";
+
+const $ = id => document.getElementById(id);
+
+function now() {
+  return new Date().toISOString();
+}
+
+function loadPosts() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (raw) {
+    try { return JSON.parse(raw); } catch {}
+  }
+
+  const seeded = initialPosts.map((p, i) => ({
+    id: `sample-${i + 1}`,
+    ...p,
+    createdAt: now(),
+    updatedAt: now()
+  }));
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
+  return seeded;
+}
+
+function savePosts() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+  }[c]));
+}
+
+function formatDate(iso) {
+  return new Intl.DateTimeFormat("ja-JP", {
+    year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"
+  }).format(new Date(iso));
+}
+
+function filteredPosts() {
+  const q = query.trim().toLowerCase();
+  return posts
+    .filter(p => !q || `${p.title}\n${p.body}`.toLowerCase().includes(q))
+    .sort((a, b) => a.title.localeCompare(b.title, "ja"));
+}
+
+function buildTree(list) {
+  const root = { folders: {}, posts: [] };
+
+  for (const post of list) {
+    const parts = post.title.split("/").map(x => x.trim()).filter(Boolean);
+    const leaf = parts.pop() || post.title;
+    let node = root;
+
+    for (const part of parts) {
+      node.folders[part] ||= { folders: {}, posts: [] };
+      node = node.folders[part];
+    }
+
+    node.posts.push({ ...post, leaf });
+  }
+
+  return root;
+}
+
+function renderTreeNode(node, depth = 0) {
+  const folders = Object.entries(node.folders).sort(([a], [b]) => a.localeCompare(b, "ja"));
+  const articles = node.posts.sort((a, b) => a.leaf.localeCompare(b.leaf, "ja"));
+
+  return `
+    ${folders.map(([name, child]) => `
+      <div>
+        <div class="flex items-center gap-2 px-2 py-1.5 font-bold text-gray-700" style="padding-left:${depth * 16 + 8}px">
+          <span class="text-emerald-600">▾</span>
+          <span class="truncate">${escapeHtml(name)}</span>
+        </div>
+        ${renderTreeNode(child, depth + 1)}
+      </div>
+    `).join("")}
+
+    ${articles.map(post => `
+      <button data-id="${post.id}" class="postLink flex w-full items-center rounded-md px-2 py-2 text-left ${post.id === selectedId ? "bg-emerald-50 text-emerald-800" : "text-gray-600 hover:bg-gray-50"}" style="padding-left:${depth * 16 + 28}px">
+        <span class="mr-2 text-gray-400">#</span>
+        <span class="min-w-0 flex-1 truncate">${escapeHtml(post.leaf)}</span>
+        ${post.status === "wip" ? `<span class="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-700">WIP</span>` : ""}
+      </button>
+    `).join("")}
+  `;
+}
+
+function renderTree() {
+  $("tree").innerHTML = renderTreeNode(buildTree(filteredPosts())) || `<p class="p-3 text-gray-500">記事がありません。</p>`;
+  document.querySelectorAll(".postLink").forEach(btn => {
+    btn.onclick = () => {
+      selectedId = btn.dataset.id;
+      editingId = null;
+      showViewer();
+      render();
+    };
+  });
+}
+
+function selectedPost() {
+  return posts.find(p => p.id === selectedId) || posts[0];
+}
+
+function renderViewer() {
+  const post = selectedPost();
+  if (!post) {
+    $("viewTitle").textContent = "記事がありません";
+    $("viewBody").innerHTML = "<p>編集ロックを解除して記事を作成してください。</p>";
+    return;
+  }
+
+  selectedId = post.id;
+  $("viewTitle").textContent = post.title;
+  $("viewBody").innerHTML = marked.parse(post.body || "_本文がありません。_");
+  $("statusBadge").textContent = post.status === "wip" ? "WIP" : "Ship";
+  $("statusBadge").className = `rounded-full px-2.5 py-1 text-xs font-bold ${post.status === "wip" ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"}`;
+  $("updatedAt").textContent = `更新: ${formatDate(post.updatedAt)}`;
+}
+
+function renderLock() {
+  $("newBtn").disabled = !unlocked;
+  $("editBtn").disabled = !unlocked;
+  $("deleteBtn").disabled = !unlocked;
+  $("unlockBtn").textContent = unlocked ? "編集OK" : "編集ロック";
+  $("lockText").textContent = unlocked
+    ? "編集モードです。記事の作成・編集・削除ができます。"
+    : "閲覧モードです。編集にはパスコードが必要です。";
+}
+
+function render() {
+  renderLock();
+  renderTree();
+  renderViewer();
+}
+
+function showViewer() {
+  $("viewer").classList.remove("hidden");
+  $("editor").classList.add("hidden");
+  $("editor").classList.remove("flex");
+}
+
+function showEditor() {
+  $("viewer").classList.add("hidden");
+  $("editor").classList.remove("hidden");
+  $("editor").classList.add("flex");
+  updatePreview();
+}
+
+function openModal() {
+  $("modal").classList.remove("hidden");
+  $("modal").classList.add("flex");
+  $("passError").classList.add("hidden");
+  $("passInput").value = "";
+  setTimeout(() => $("passInput").focus(), 0);
+}
+
+function closeModal() {
+  $("modal").classList.add("hidden");
+  $("modal").classList.remove("flex");
+}
+
+function requireUnlock() {
+  if (unlocked) return true;
+  openModal();
+  return false;
+}
+
+function updatePreview() {
+  const title = $("titleInput").value.trim();
+  const body = $("bodyInput").value;
+  $("editPreview").innerHTML = marked.parse((title ? `# ${title}\n\n` : "") + body);
+}
+
+$("unlockBtn").onclick = () => {
+  if (unlocked) {
+    unlocked = false;
+    sessionStorage.removeItem(EDIT_SESSION_KEY);
+    showViewer();
+    renderLock();
+  } else {
+    openModal();
+  }
+};
+
+$("passSubmit").onclick = () => {
+  if ($("passInput").value === EDIT_PASSCODE) {
+    unlocked = true;
+    sessionStorage.setItem(EDIT_SESSION_KEY, "true");
+    closeModal();
+    renderLock();
+  } else {
+    $("passError").classList.remove("hidden");
+  }
+};
+
+$("passInput").onkeydown = e => {
+  if (e.key === "Enter") $("passSubmit").click();
+  if (e.key === "Escape") closeModal();
+};
+
+$("modalClose").onclick = closeModal;
+
+$("newBtn").onclick = () => {
+  if (!requireUnlock()) return;
+  editingId = null;
+  $("titleInput").value = "";
+  $("bodyInput").value = "# 新しい記事\n\nここに内容を書きます。";
+  showEditor();
+};
+
+$("editBtn").onclick = () => {
+  if (!requireUnlock()) return;
+  const post = selectedPost();
+  if (!post) return;
+  editingId = post.id;
+  $("titleInput").value = post.title;
+  $("bodyInput").value = post.body;
+  showEditor();
+};
+
+$("deleteBtn").onclick = () => {
+  if (!requireUnlock()) return;
+  const post = selectedPost();
+  if (!post || !confirm(`「${post.title}」を削除しますか？`)) return;
+  posts = posts.filter(p => p.id !== post.id);
+  selectedId = posts[0]?.id ?? null;
+  savePosts();
+  showViewer();
+  render();
+};
+
+$("cancelBtn").onclick = showViewer;
+
+function saveCurrent(status) {
+  if (!requireUnlock()) return;
+
+  const title = $("titleInput").value.trim();
+  const body = $("bodyInput").value.trim();
+
+  if (!title) {
+    alert("タイトルを入力してください。例: ライブ/当日必要なもの");
+    return;
+  }
+
+  if (editingId) {
+    const post = posts.find(p => p.id === editingId);
+    post.title = title;
+    post.body = body;
+    post.status = status;
+    post.updatedAt = now();
+    selectedId = post.id;
+  } else {
+    const post = {
+      id: `post-${Date.now()}`,
+      title,
+      body,
+      status,
+      createdAt: now(),
+      updatedAt: now()
+    };
+    posts.push(post);
+    selectedId = post.id;
+  }
+
+  savePosts();
+  editingId = null;
+  showViewer();
+  render();
+}
+
+$("wipBtn").onclick = () => saveCurrent("wip");
+$("shipBtn").onclick = () => saveCurrent("ship");
+$("titleInput").oninput = updatePreview;
+$("bodyInput").oninput = updatePreview;
+$("search").oninput = e => {
+  query = e.target.value;
+  renderTree();
+};
+
+render();
+</script>
+</body>
+</html>
