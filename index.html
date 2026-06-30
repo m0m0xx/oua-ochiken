@@ -8,71 +8,94 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    .preview h1 { font-size: 1.8rem; font-weight: 800; border-bottom: 1px solid #e5e7eb; padding-bottom: .7rem; margin-bottom: 1rem; }
-    .preview h3 { font-size: 1.1rem; font-weight: 800; margin-top: 1.4rem; margin-bottom: .5rem; }
-    .preview p, .preview li { line-height: 1.8; }
-    .preview ul { list-style: disc; margin-left: 1.4rem; }
-    .preview ol { list-style: decimal; margin-left: 1.4rem; }
-    .preview blockquote { background: #ecfdf5; border-left: 4px solid #34d399; padding: .8rem 1rem; border-radius: 0 .5rem .5rem 0; color: #065f46; }
-    .preview code { background: #f3f4f6; padding: .1rem .35rem; border-radius: .3rem; color: #047857; }
+    .preview h1 { font-size: 1.6rem; font-weight: 800; border-bottom: 2px solid #e5e7eb; padding-bottom: .5rem; margin-bottom: 1rem; }
+    .preview h3 { font-size: 1.1rem; font-weight: 800; margin-top: 1.4rem; margin-bottom: .5rem; color: #111827; }
+    .preview p, .preview li { line-height: 1.8; font-size: 0.95rem; }
+    .preview ul { list-style: disc; margin-left: 1.4rem; margin-bottom: 1rem; }
+    .preview ol { list-style: decimal; margin-left: 1.4rem; margin-bottom: 1rem; }
+    .preview ul input[type="checkbox"] { margin-right: 0.5rem; transform: scale(1.1); }
+    .preview blockquote { background: #ecfdf5; border-left: 4px solid #34d399; padding: .8rem 1rem; border-radius: 0 .5rem .5rem 0; color: #065f46; margin: 1rem 0; }
+    .preview code { background: #f3f4f6; padding: .1rem .35rem; border-radius: .3rem; color: #047857; font-family: monospace; }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
-<div class="flex min-h-screen">
-  <aside class="w-80 shrink-0 border-r border-gray-200 bg-white">
-    <div class="border-b border-gray-200 p-5">
-      <p class="text-xs font-bold uppercase tracking-widest text-emerald-600">knowledge</p>
+<body class="bg-gray-50 text-gray-900 overflow-x-hidden">
+
+<header class="lg:hidden flex items-center justify-between bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-40 shadow-sm">
+  <div class="flex items-center gap-3">
+    <button id="menuMenuBtn" class="p-2 text-gray-600 hover:bg-gray-100 rounded-md">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    </button>
+    <span class="font-extrabold text-gray-800">部内ルール共有</span>
+  </div>
+  <button id="unlockBtnMobile" class="text-xs font-bold px-2.5 py-1.5 rounded-md border border-emerald-200 bg-emerald-50 text-emerald-700">ロック解除</button>
+</header>
+
+<div class="flex min-h-screen relative">
+  
+  <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 shrink-0 border-r border-gray-200 bg-white transform -translate-x-full transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 flex flex-col h-screen">
+    <div class="border-b border-gray-200 p-5 sticky top-0 bg-white z-10">
+      <div class="flex items-center justify-between">
+        <p class="text-xs font-bold uppercase tracking-widest text-emerald-600">knowledge</p>
+        <button id="closeSidebarBtn" class="lg:hidden p-1 text-gray-500 hover:bg-gray-100 rounded-md">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
       <div class="mt-1 flex items-center justify-between gap-3">
-        <h1 class="text-xl font-extrabold">部内ルール共有</h1>
-        <button id="unlockBtn" class="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-bold text-emerald-700">編集ロック</button>
+        <h1 class="text-xl font-extrabold hidden lg:block">部内ルール共有</h1>
+        <button id="unlockBtn" class="hidden lg:block rounded-md border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700">編集ロック</button>
       </div>
       <button id="newBtn" class="mt-4 w-full rounded-md bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white disabled:bg-gray-300">+ 新規作成</button>
-      <p id="lockText" class="mt-3 rounded-md bg-gray-50 px-3 py-2 text-xs text-gray-600"></p>
+      <p id="lockText" class="mt-3 rounded-md bg-gray-50 px-3 py-2 text-xs text-gray-600 hidden lg:block"></p>
     </div>
 
-    <div class="border-b border-gray-200 p-4">
+    <div class="border-b border-gray-200 p-4 bg-white">
       <input id="search" class="w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none focus:border-emerald-400" placeholder="記事を検索" />
     </div>
 
-    <nav id="tree" class="p-3 text-sm"></nav>
+    <nav id="tree" class="p-3 text-sm overflow-y-auto flex-1"></nav>
   </aside>
 
-  <main class="min-w-0 flex-1">
-    <section id="viewer" class="mx-auto max-w-5xl p-8">
-      <div class="mb-6 flex items-start justify-between gap-4 border-b border-gray-200 pb-5">
+  <div id="sidebarOverlay" class="fixed inset-0 bg-black/40 z-40 hidden transition-opacity duration-300"></div>
+
+  <main class="min-w-0 flex-1 w-full">
+    
+    <section id="viewer" class="mx-auto max-w-4xl p-4 sm:p-6 lg:p-8">
+      <div class="mb-6 flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-gray-200 pb-5">
         <div>
-          <div class="mb-2 flex items-center gap-2">
-            <span id="statusBadge" class="rounded-full px-2.5 py-1 text-xs font-bold"></span>
-            <span id="updatedAt" class="text-sm text-gray-500"></span>
+          <div class="mb-2 flex items-center gap-2 flex-wrap">
+            <span id="statusBadge" class="rounded-full px-2.5 py-0.5 text-xs font-bold"></span>
+            <span id="updatedAt" class="text-xs text-gray-500"></span>
           </div>
-          <h2 id="viewTitle" class="break-words text-3xl font-extrabold"></h2>
+          <h2 id="viewTitle" class="break-words text-2xl sm:text-3xl font-extrabold text-gray-900"></h2>
         </div>
-        <div class="flex gap-2">
-          <button id="editBtn" class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-bold disabled:text-gray-400">編集</button>
-          <button id="deleteBtn" class="rounded-md border border-red-200 bg-white px-4 py-2 text-sm font-bold text-red-600 disabled:text-gray-400">削除</button>
+        <div class="flex gap-2 self-end sm:self-auto">
+          <button id="editBtn" class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-bold disabled:text-gray-400">編集</button>
+          <button id="deleteBtn" class="rounded-md border border-red-200 bg-white px-3 py-1.5 text-sm font-bold text-red-600 disabled:text-gray-400">削除</button>
         </div>
       </div>
-      <article id="viewBody" class="preview rounded-md bg-white p-7 shadow-sm ring-1 ring-gray-200"></article>
+      <article id="viewBody" class="preview rounded-md bg-white p-4 sm:p-7 shadow-sm ring-1 ring-gray-200 overflow-x-auto"></article>
     </section>
 
-    <section id="editor" class="hidden h-screen flex-col">
-      <div class="border-b border-gray-200 bg-white p-5">
+    <section id="editor" class="hidden h-screen flex-col bg-white">
+      <div class="border-b border-gray-200 bg-white p-4">
         <label class="mb-1 block text-xs font-bold uppercase tracking-widest text-gray-500">title</label>
-        <div class="flex flex-wrap gap-3">
-          <input id="titleInput" class="min-w-72 flex-1 rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-lg font-bold outline-none focus:border-emerald-400" placeholder="ライブ/当日必要なもの" />
-          <button id="cancelBtn" class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-bold">キャンセル</button>
-          <button id="wipBtn" class="rounded-md border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-bold text-amber-700">下書き保存</button>
-          <button id="shipBtn" class="rounded-md bg-emerald-600 px-4 py-2 text-sm font-bold text-white">公開保存</button>
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <input id="titleInput" class="w-full sm:flex-1 rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-base font-bold outline-none focus:border-emerald-400" placeholder="ライブ/当日必要なもの" />
+          <div class="flex gap-2 justify-end">
+            <button id="cancelBtn" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-xs font-bold">戻る</button>
+            <button id="wipBtn" class="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700">下書き</button>
+            <button id="shipBtn" class="rounded-md bg-emerald-600 px-4 py-2 text-xs font-bold text-white">公開</button>
+          </div>
         </div>
       </div>
 
       <div class="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-2">
         <div class="flex min-h-0 flex-col border-r border-gray-200 bg-white">
-          <div class="border-b border-gray-200 px-5 py-3 text-sm font-bold">Markdown</div>
-          <textarea id="bodyInput" class="min-h-0 flex-1 resize-none p-5 font-mono text-sm leading-7 outline-none"></textarea>
+          <div class="border-b border-gray-200 px-4 py-2 text-xs font-bold bg-gray-50 text-gray-500">Markdown（ここに入力）</div>
+          <textarea id="bodyInput" class="min-h-0 flex-1 resize-none p-4 font-mono text-sm leading-6 outline-none bg-gray-50/30" placeholder="Markdown形式で記述してください..."></textarea>
         </div>
-        <div class="min-h-0 overflow-y-auto bg-gray-50">
-          <div class="sticky top-0 border-b border-gray-200 bg-gray-50 px-5 py-3 text-sm font-bold">Preview</div>
+        <div class="min-h-0 overflow-y-auto bg-gray-50 hidden lg:block" id="previewContainer">
+          <div class="sticky top-0 border-b border-gray-200 bg-gray-50 px-5 py-2 text-xs font-bold text-gray-500">リアルタイムプレビュー（PCのみ）</div>
           <article id="editPreview" class="preview m-5 rounded-md bg-white p-7 shadow-sm ring-1 ring-gray-200"></article>
         </div>
       </div>
@@ -80,12 +103,12 @@
   </main>
 </div>
 
-<div id="modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/35 p-4">
-  <div class="w-full max-w-sm rounded-lg bg-white p-5 shadow-xl">
+<div id="modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 p-4">
+  <div class="w-full max-w-sm rounded-lg bg-white p-5 shadow-xl transition-all scale-95 duration-200">
     <p class="text-xs font-bold uppercase tracking-widest text-emerald-600">edit access</p>
     <h2 class="mt-1 text-xl font-extrabold">パスコード入力</h2>
-    <p class="mt-2 text-sm text-gray-600">編集・新規作成・削除・保存にはパスコードが必要です。</p>
-    <input id="passInput" type="password" class="mt-4 w-full rounded-md border border-gray-200 px-3 py-2.5 outline-none focus:border-emerald-400" placeholder="パスコード" />
+    <p class="mt-2 text-sm text-gray-600">編集や新規作成にはパスコードが必要です。</p>
+    <input id="passInput" type="password" inputmode="numeric" class="mt-4 w-full rounded-md border border-gray-200 px-3 py-2.5 text-lg text-center tracking-widest outline-none focus:border-emerald-400" placeholder="••••" />
     <p id="passError" class="mt-2 hidden text-sm font-bold text-red-600">パスコードが違います。</p>
     <div class="mt-5 flex justify-end gap-2">
       <button id="modalClose" class="rounded-md border border-gray-300 px-4 py-2 text-sm font-bold">閉じる</button>
@@ -99,37 +122,43 @@ const STORAGE_KEY = "esa_like_posts_v1";
 const DATA_VERSION_KEY = "esa_like_posts_data_version";
 const CURRENT_DATA_VERSION = 2;
 const EDIT_SESSION_KEY = "esa_like_edit_unlocked";
-const EDIT_PASSCODE = "23242526";
 
-marked.setOptions({ gfm: true, breaks: true });
+// 部室の鍵のダイヤル番号に変更！変更したい場合はここを書き換えてね
+const EDIT_PASSCODE = "9265"; 
+
+// marked.js の設定：チェックボックスを綺麗にレンダリングできるように設定
+marked.use({
+  gfm: true,
+  breaks: true
+});
 
 const neededItemsBody = `# 芸漫当日に必要なものリスト
 
 ### ■ 全体共通
-- 板 6枚
-- スピーカー 2つ（※充電要チェック）
-- カメラ（※充電要チェック）
-- カメラの三脚
-- その日の分のアンケート
-- クリップボード
-- 筆記用具箱（鉛筆などが入っている箱）
+- [ ] 板 6枚
+- [ ] スピーカー 2つ（※充電要チェック）
+- [ ] カメラ（※充電要チェック）
+- [ ] カメラの三脚
+- [ ] その日の分のアンケート
+- [ ] クリップボード
+- [ ] 筆記用具箱（鉛筆などが入っている箱）
 
 ### ■ 落語のもの
-- 高座台（ビールケースを9つつなげたもの）
-- 毛氈（赤い布）
-- 座布団（紫のもの）
-- 名ビラの木枠
-- 芸大落研のビラ
-- その日の出演者の名ビラ
-- 見台（必要な出演者がいる日のみ）
+- [ ] 高座台（ビールケースを9つつなげたもの）
+- [ ] 毛氈（赤い布）
+- [ ] 座布団（紫のもの）
+- [ ] 名ビラの木枠
+- [ ] 芸大落研のビラ
+- [ ] その日の出演者の名ビラ
+- [ ] 見台（必要な出演者がいる日のみ）
 
 ### ■ イロモノのもの
-- マイク
+- [ ] マイク
 
 ### ■ 大喜利があるとき
-- ホワイトボード
-- ホワイトボードマーカー
-- イレイサー（消すやつ）`;
+- [ ] ホワイトボード
+- [ ] ホワイトボードマーカー
+- [ ] イレイサー（消すやつ）`;
 
 const initialPosts = [
   {
@@ -146,7 +175,7 @@ const initialPosts = [
 4. グループLINEにて「鍵借りました」と報告する。
 
 ### 〇鍵を返す時
-1. **11号館1階の守衛室**に行き、守衛さんに鍵を返す。
+1. **11号館1階の守衛室**に行き、守衛さんに鍵を返す.
 2. 大きなバインダー2枚目の紙に「学籍番号・名前・鍵を返した時間」を書く欄があるため、鍵を返した人が書く。
    - 返す時は学生証見せなくてOK。
 3. グループLINEにて「鍵返しました」と報告する。
@@ -214,100 +243,46 @@ let unlocked = sessionStorage.getItem(EDIT_SESSION_KEY) === "true";
 
 const $ = id => document.getElementById(id);
 
-function now() {
-  return new Date().toISOString();
-}
-
-function migratePosts(list) {
-  const version = Number(localStorage.getItem(DATA_VERSION_KEY) || "1");
-
-  if (version < 2) {
-    list = list.map(post => {
-      if (post.id === "sample-3" || post.title === "芸漫/当日必要なもの") {
-        return {
-          ...post,
-          title: "芸漫/当日必要なもの",
-          body: neededItemsBody,
-          updatedAt: now()
-        };
-      }
-      return post;
-    });
-  }
-
-  localStorage.setItem(DATA_VERSION_KEY, String(CURRENT_DATA_VERSION));
-  return list;
-}
+function now() { return new Date().toISOString(); }
 
 function loadPosts() {
   const raw = localStorage.getItem(STORAGE_KEY);
-
   if (raw) {
     try {
-      const parsed = migratePosts(JSON.parse(raw));
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
-      return parsed;
+      return JSON.parse(raw);
     } catch {}
   }
-
-  const seeded = initialPosts.map((p, i) => ({
-    id: `sample-${i + 1}`,
-    ...p,
-    createdAt: now(),
-    updatedAt: now()
-  }));
-
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
-  localStorage.setItem(DATA_VERSION_KEY, String(CURRENT_DATA_VERSION));
-  return seeded;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(initialPosts.map((p, i) => ({ id: `sample-${i + 1}`, ...p, createdAt: now(), updatedAt: now() }))));
+  return JSON.parse(localStorage.getItem(STORAGE_KEY));
 }
 
-function savePosts() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
-  }[c]));
-}
-
-function formatDate(iso) {
-  return new Intl.DateTimeFormat("ja-JP", {
-    year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"
-  }).format(new Date(iso));
-}
+function savePosts() { localStorage.setItem(STORAGE_KEY, JSON.stringify(posts)); }
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c])); }
+function formatDate(iso) { return new Intl.DateTimeFormat("ja-JP", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).format(new Date(iso)); }
 
 function filteredPosts() {
   const q = query.trim().toLowerCase();
-  return posts
-    .filter(p => !q || `${p.title}\n${p.body}`.toLowerCase().includes(q))
-    .sort((a, b) => a.title.localeCompare(b.title, "ja"));
+  return posts.filter(p => !q || `${p.title}\n${p.body}`.toLowerCase().includes(q)).sort((a, b) => a.title.localeCompare(b.title, "ja"));
 }
 
 function buildTree(list) {
   const root = { folders: {}, posts: [] };
-
   for (const post of list) {
     const parts = post.title.split("/").map(x => x.trim()).filter(Boolean);
     const leaf = parts.pop() || post.title;
     let node = root;
-
     for (const part of parts) {
       node.folders[part] ||= { folders: {}, posts: [] };
       node = node.folders[part];
     }
-
     node.posts.push({ ...post, leaf });
   }
-
   return root;
 }
 
 function renderTreeNode(node, depth = 0) {
   const folders = Object.entries(node.folders).sort(([a], [b]) => a.localeCompare(b, "ja"));
   const articles = node.posts.sort((a, b) => a.leaf.localeCompare(b.leaf, "ja"));
-
   return `
     ${folders.map(([name, child]) => `
       <div>
@@ -318,58 +293,54 @@ function renderTreeNode(node, depth = 0) {
         ${renderTreeNode(child, depth + 1)}
       </div>
     `).join("")}
-
     ${articles.map(post => `
-      <button data-id="${post.id}" class="postLink flex w-full items-center rounded-md px-2 py-2 text-left ${post.id === selectedId ? "bg-emerald-50 text-emerald-800" : "text-gray-600 hover:bg-gray-50"}" style="padding-left:${depth * 16 + 28}px">
+      <button data-id="${post.id}" class="postLink flex w-full items-center rounded-md px-2 py-2 text-left ${post.id === selectedId ? "bg-emerald-50 text-emerald-800 font-medium" : "text-gray-600 hover:bg-gray-50"}" style="padding-left:${depth * 16 + 28}px">
         <span class="mr-2 text-gray-400">#</span>
         <span class="min-w-0 flex-1 truncate">${escapeHtml(post.leaf)}</span>
-        ${post.status === "wip" ? `<span class="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-700">下書き</span>` : ""}
+        ${post.status === "wip" ? `<span class="ml-2 shrink-0 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-700">下書き</span>` : ""}
       </button>
     `).join("")}
   `;
 }
 
 function renderTree() {
-  $("tree").innerHTML = renderTreeNode(buildTree(filteredPosts())) || `<p class="p-3 text-gray-500">記事がありません。</p>`;
+  $("tree").innerHTML = renderTreeNode(buildTree(filteredPosts())) || `<p class="p-3 text-gray-500">記事が見つかりません。</p>`;
   document.querySelectorAll(".postLink").forEach(btn => {
     btn.onclick = () => {
       selectedId = btn.dataset.id;
       editingId = null;
       showViewer();
       render();
+      closeSidebar(); // スマホ時はタップしたら自動でメニューを閉じる
     };
   });
 }
 
-function selectedPost() {
-  return posts.find(p => p.id === selectedId) || posts[0];
-}
+function selectedPost() { return posts.find(p => p.id === selectedId) || posts[0]; }
 
 function renderViewer() {
   const post = selectedPost();
-
   if (!post) {
     $("viewTitle").textContent = "記事がありません";
-    $("viewBody").innerHTML = "<p>編集ロックを解除して記事を作成してください。</p>";
+    $("viewBody").innerHTML = "<p class='text-gray-500'>左上のメニューから記事を選択するか、新しく作成してください。</p>";
     return;
   }
-
   selectedId = post.id;
   $("viewTitle").textContent = post.title;
   $("viewBody").innerHTML = marked.parse(post.body || "_本文がありません。_");
   $("statusBadge").textContent = post.status === "wip" ? "下書き" : "公開";
-  $("statusBadge").className = `rounded-full px-2.5 py-1 text-xs font-bold ${post.status === "wip" ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"}`;
+  $("statusBadge").className = `rounded-full px-2.5 py-0.5 text-xs font-bold ${post.status === "wip" ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"}`;
   $("updatedAt").textContent = `更新: ${formatDate(post.updatedAt)}`;
 }
 
 function renderLock() {
-  $("newBtn").disabled = !unlocked;
-  $("editBtn").disabled = !unlocked;
-  $("deleteBtn").disabled = !unlocked;
-  $("unlockBtn").textContent = unlocked ? "編集OK" : "編集ロック";
-  $("lockText").textContent = unlocked
-    ? "編集モードです。記事の作成・編集・削除ができます。"
-    : "閲覧モードです。編集にはパスコードが必要です。";
+  const btns = ["newBtn", "editBtn", "deleteBtn"];
+  btns.forEach(id => { if($(id)) $(id).disabled = !unlocked; });
+  
+  const text = unlocked ? "編集OK" : "編集ロック";
+  if($("unlockBtn")) $("unlockBtn").textContent = text;
+  if($("unlockBtnMobile")) $("unlockBtnMobile").textContent = unlocked ? "編集モード" : "ロック解除";
+  if($("lockText")) $("lockText").textContent = unlocked ? "編集モードです。作成・編集ができます。" : "閲覧モードです。編集にはパスコードが必要です。";
 }
 
 function render() {
@@ -378,10 +349,25 @@ function render() {
   renderViewer();
 }
 
+// スマホ用サイドバー操作
+function openSidebar() {
+  $("sidebar").classList.remove("-translate-x-full");
+  $("sidebarOverlay").classList.remove("hidden");
+}
+function closeSidebar() {
+  $("sidebar").classList.add("-translate-x-full");
+  $("sidebarOverlay").classList.add("hidden");
+}
+
+$("menuMenuBtn").onclick = openSidebar;
+$("closeSidebarBtn").onclick = closeSidebar;
+$("sidebarOverlay").onclick = closeSidebar;
+
 function showViewer() {
   $("viewer").classList.remove("hidden");
   $("editor").classList.add("hidden");
   $("editor").classList.remove("flex");
+  window.scrollTo(0, 0);
 }
 
 function showEditor() {
@@ -389,6 +375,7 @@ function showEditor() {
   $("editor").classList.remove("hidden");
   $("editor").classList.add("flex");
   updatePreview();
+  window.scrollTo(0, 0);
 }
 
 function openModal() {
@@ -398,17 +385,11 @@ function openModal() {
   $("passInput").value = "";
   setTimeout(() => $("passInput").focus(), 0);
 }
-
 function closeModal() {
   $("modal").classList.add("hidden");
   $("modal").classList.remove("flex");
 }
-
-function requireUnlock() {
-  if (unlocked) return true;
-  openModal();
-  return false;
-}
+function requireUnlock() { if (unlocked) return true; openModal(); return false; }
 
 function updatePreview() {
   const title = $("titleInput").value.trim();
@@ -416,7 +397,7 @@ function updatePreview() {
   $("editPreview").innerHTML = marked.parse((title ? `# ${title}\n\n` : "") + body);
 }
 
-$("unlockBtn").onclick = () => {
+const unlockHandler = () => {
   if (unlocked) {
     unlocked = false;
     sessionStorage.removeItem(EDIT_SESSION_KEY);
@@ -426,6 +407,8 @@ $("unlockBtn").onclick = () => {
     openModal();
   }
 };
+$("unlockBtn").onclick = unlockHandler;
+$("unlockBtnMobile").onclick = unlockHandler;
 
 $("passSubmit").onclick = () => {
   if ($("passInput").value === EDIT_PASSCODE) {
@@ -437,31 +420,11 @@ $("passSubmit").onclick = () => {
     $("passError").classList.remove("hidden");
   }
 };
-
-$("passInput").onkeydown = e => {
-  if (e.key === "Enter") $("passSubmit").click();
-  if (e.key === "Escape") closeModal();
-};
-
+$("passInput").onkeydown = e => { if (e.key === "Enter") $("passSubmit").click(); if (e.key === "Escape") closeModal(); };
 $("modalClose").onclick = closeModal;
 
-$("newBtn").onclick = () => {
-  if (!requireUnlock()) return;
-  editingId = null;
-  $("titleInput").value = "";
-  $("bodyInput").value = "# 新しい記事\n\nここに内容を書きます。";
-  showEditor();
-};
-
-$("editBtn").onclick = () => {
-  if (!requireUnlock()) return;
-  const post = selectedPost();
-  if (!post) return;
-  editingId = post.id;
-  $("titleInput").value = post.title;
-  $("bodyInput").value = post.body;
-  showEditor();
-};
+$("newBtn").onclick = () => { if (!requireUnlock()) return; editingId = null; $("titleInput").value = ""; $("bodyInput").value = "# 新しい記事\n\nここに内容を書きます。"; closeSidebar(); showEditor(); };
+$("editBtn").onclick = () => { if (!requireUnlock()) return; const post = selectedPost(); if (!post) return; editingId = post.id; $("titleInput").value = post.title; $("bodyInput").value = post.body; showEditor(); };
 
 $("deleteBtn").onclick = () => {
   if (!requireUnlock()) return;
@@ -478,35 +441,19 @@ $("cancelBtn").onclick = showViewer;
 
 function saveCurrent(status) {
   if (!requireUnlock()) return;
-
   const title = $("titleInput").value.trim();
   const body = $("bodyInput").value.trim();
-
-  if (!title) {
-    alert("タイトルを入力してください。例: ライブ/当日必要なもの");
-    return;
-  }
+  if (!title) { alert("タイトルを入力してください。"); return; }
 
   if (editingId) {
     const post = posts.find(p => p.id === editingId);
-    post.title = title;
-    post.body = body;
-    post.status = status;
-    post.updatedAt = now();
+    post.title = title; post.body = body; post.status = status; post.updatedAt = now();
     selectedId = post.id;
   } else {
-    const post = {
-      id: `post-${Date.now()}`,
-      title,
-      body,
-      status,
-      createdAt: now(),
-      updatedAt: now()
-    };
+    const post = { id: `post-${Date.now()}`, title, body, status, createdAt: now(), updatedAt: now() };
     posts.push(post);
     selectedId = post.id;
   }
-
   savePosts();
   editingId = null;
   showViewer();
@@ -515,14 +462,9 @@ function saveCurrent(status) {
 
 $("wipBtn").onclick = () => saveCurrent("wip");
 $("shipBtn").onclick = () => saveCurrent("ship");
-
 $("titleInput").oninput = updatePreview;
 $("bodyInput").oninput = updatePreview;
-
-$("search").oninput = e => {
-  query = e.target.value;
-  renderTree();
-};
+$("search").oninput = e => { query = e.target.value; renderTree(); };
 
 render();
 </script>
